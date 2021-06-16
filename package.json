@@ -6,9 +6,12 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "codegen": "graphql-codegen --config graphql-codegen.yml"
   },
   "dependencies": {
+    "@apollo/client": "^3.3.20",
+    "graphql": "^15.5.0",
     "next": "11.0.0",
     "react": "17.0.2",
     "react-dom": "17.0.2"
@@ -16,6 +19,10 @@
   "devDependencies": {
     "@commitlint/cli": "^12.1.4",
     "@commitlint/config-conventional": "^12.1.4",
+    "@graphql-codegen/add": "^2.0.2",
+    "@graphql-codegen/cli": "^1.21.5",
+    "@graphql-codegen/typescript-operations": "^1.18.0",
+    "@graphql-codegen/typescript-react-apollo": "^2.2.5",
     "@types/react": "17.0.11",
     "autoprefixer": "^10.2.6",
     "eslint": "7.28.0",
