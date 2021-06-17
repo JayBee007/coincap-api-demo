@@ -1,14 +1,20 @@
 import type { AppProps } from "next/app";
+import { ApolloProvider } from "@apollo/client";
+
+import { client } from "../graphql/client";
 
 import { MainLayout } from "../src/components/Layout";
+
 import "../styles/globals.scss";
 
-function MyApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   return (
-    <MainLayout>
-      <Component {...pageProps} />
-    </MainLayout>
+    <ApolloProvider client={client}>
+      <MainLayout>
+        <Component {...pageProps} />
+      </MainLayout>
+    </ApolloProvider>
   );
 }
 
-export default MyApp;
+export default App;
