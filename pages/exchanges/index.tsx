@@ -1,5 +1,14 @@
 import React from "react";
 
+import { ExchangesContainer } from "../../src/components/Exchanges";
+import { ClientOnly } from "../../src/components/ClientOnly";
+
 export default function ExchangeIndexPage(): React.ReactElement {
-  return <div>Exchanges</div>;
+  return (
+    <div>
+      <ClientOnly>
+        <ExchangesContainer />
+      </ClientOnly>
+    </div>
+  );
 }
