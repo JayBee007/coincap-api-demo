@@ -1,21 +1,33 @@
 import React from "react";
 import { useRouter } from "next/router";
+import useInfiniteScroll from "react-infinite-scroll-hook";
+import debounce from "lodash/debounce";
+
+import { ArrowDown } from "../../assets/icons/ArrowDown";
+import { ArrowUp } from "../../assets/icons/ArrowUp";
+
+import { ExchangeSortInput, SortDirection } from "../../graphql/__generated__";
+
+const DEBOUNCED_INTERVAL = 300;
 
 const HEADINGS = [
   {
     title: "Rank",
     sort: true,
+    sortName: ExchangeSortInput["Rank"],
     alignClass: "text-center",
   },
   {
     title: "Name",
     sort: true,
+    sortName: ExchangeSortInput["Name"],
     alignClass: "text-left",
   },
   {
     title: "Trading Pairs",
     sort: true,
-    alignClass: "text-center",
+    sortName: ExchangeSortInput["TradingPairs"],
+    alignClass: "text-right",
   },
   {
     title: "Top Pair",
@@ -25,41 +37,84 @@ const HEADINGS = [
   {
     title: "Volume(24hr)",
     sort: true,
+    sortName: ExchangeSortInput["VolumeUsd24Hr"],
     alignClass: "text-right",
   },
   {
     title: "Total(%)",
     sort: true,
+    sortName: ExchangeSortInput["PercentTotalVolume"],
     alignClass: "text-right",
   },
   {
     title: "Status",
     sort: true,
+    sortName: ExchangeSortInput["UpdatedAt"],
     alignClass: "text-center",
   },
 ];
 interface ExchangeProps {
+  hasNextPage: boolean;
+  isLoading: boolean;
+  sortFilter: ExchangeSortInput;
+  direction: SortDirection;
   data?: any[];
+  handleSortAndDirection: (newSort: ExchangeSortInput) => void;
+  handlePagination: () => void;
 }
 export function Exchanges(props: ExchangeProps): React.ReactElement {
-  const { data } = props;
+  const {
+    data,
+    handleSortAndDirection,
+    sortFilter,
+    direction,
+    handlePagination,
+    isLoading,
+    hasNextPage,
+  } = props;
   const router = useRouter();
+
+  const debouncedHandlePagination = debounce(
+    handlePagination,
+    DEBOUNCED_INTERVAL
+  );
+
+  const [infiniteRef] = useInfiniteScroll({
+    loading: isLoading,
+    hasNextPage,
+    onLoadMore: debouncedHandlePagination,
+    rootMargin: "0px 0px 0px 0px",
+  });
 
   function handleNavigation(target: string) {
     router.push(`/exchanges/${target}`);
   }
+
   return (
     <table className="w-full text-sm opacity-60 font-semibold">
       <thead>
         <tr className="bg-gray-200">
           {HEADINGS.map((heading) => (
             <td
+              onClick={
+                heading.sortName
+                  ? () => handleSortAndDirection(heading.sortName)
+                  : () => {}
+              }
               className={`text-left py-2 ${heading.alignClass} ${
                 heading.sort ? "cursor-pointer" : "cursor-default"
               }`}
               key={heading.title}
             >
-              {heading.title}
+              <span>{heading.title} </span>
+              <span className="inline-block">
+                {sortFilter === heading.sortName &&
+                  (direction === SortDirection["Asc"] ? (
+                    <ArrowUp />
+                  ) : (
+                    <ArrowDown />
+                  ))}
+              </span>
             </td>
           ))}
         </tr>
@@ -73,7 +128,7 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
           >
             <td className="py-4 text-center">{node.rank}</td>
             <td className="py-4 text-left">{node.name}</td>
-            <td className="py-4 text-center">{node.tradingPairs}</td>
+            <td className="py-4 text-right">{node.tradingPairs}</td>
             <td className="py-4 text-right">{node.topPair}</td>
             <td className="py-4 text-right">{node.volumeUsd24Hr}</td>
             <td className="py-4 text-right">{node.percentTotalVolume}</td>
@@ -86,6 +141,11 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
             </td>
           </tr>
         ))}
+        {hasNextPage && (
+          <tr ref={infiniteRef}>
+            <td></td>
+          </tr>
+        )}
       </tbody>
     </table>
   );
