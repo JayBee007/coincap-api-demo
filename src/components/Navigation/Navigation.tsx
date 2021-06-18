@@ -15,7 +15,7 @@ const Menu = [
 
 export function Navigation(): React.ReactElement {
   return (
-    <div className="bg-blue-600 text-white fixed w-full">
+    <div className="bg-blue-600 text-white fixed w-full z-10">
       <nav className="container h-16 mx-auto flex justify-between items-center">
         <Link href="/">
           <a className="text-2xl font-bold tracking-wide">Coincap Demo</a>
