@@ -9,14 +9,17 @@ import {
   Exchange,
 } from "../../graphql/__generated__";
 
+const FIRST_COUNT = 25;
+const NEXT_COUNT = 35;
+
 export function ExchangesContainer(): React.ReactElement {
   const [variables, setVariables] = useState({
-    first: 20,
+    first: FIRST_COUNT,
     sort: ExchangeSortInput["Rank"],
     direction: SortDirection["Asc"],
   });
 
-  const { nodes, isLoading, fetchMore } = useExchanges(variables);
+  const { nodes, isLoading, fetchMore, hasNextPage } = useExchanges(variables);
 
   function handleSortAndDirection(newSort: ExchangeSortInput) {
     const { sort, direction } = variables;
@@ -29,7 +32,7 @@ export function ExchangesContainer(): React.ReactElement {
 
       const newVariables = {
         ...variables,
-        first: 20,
+        first: FIRST_COUNT,
         direction: newDirection,
       };
 
@@ -44,7 +47,7 @@ export function ExchangesContainer(): React.ReactElement {
     const newVariables = {
       ...variables,
       sort: newSort,
-      first: 20,
+      first: FIRST_COUNT,
       direction: SortDirection["Desc"],
     };
 
@@ -58,12 +61,12 @@ export function ExchangesContainer(): React.ReactElement {
   function handlePagination() {
     const newVariables = {
       ...variables,
-      first: variables.first + 40,
+      first: variables.first + NEXT_COUNT,
     };
 
     fetchMore({
       variables: {
-        first: variables.first + 40,
+        first: variables.first + NEXT_COUNT,
       },
     });
 
@@ -72,6 +75,7 @@ export function ExchangesContainer(): React.ReactElement {
 
   return (
     <Exchanges
+      hasNextPage={hasNextPage}
       sortFilter={variables.sort}
       direction={variables.direction}
       data={nodes}

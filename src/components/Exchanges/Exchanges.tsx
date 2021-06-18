@@ -1,10 +1,14 @@
 import React from "react";
 import { useRouter } from "next/router";
+import useInfiniteScroll from "react-infinite-scroll-hook";
+import debounce from "lodash/debounce";
 
 import { ArrowDown } from "../../assets/icons/ArrowDown";
 import { ArrowUp } from "../../assets/icons/ArrowUp";
 
 import { ExchangeSortInput, SortDirection } from "../../graphql/__generated__";
+
+const DEBOUNCED_INTERVAL = 300;
 
 const HEADINGS = [
   {
@@ -50,10 +54,11 @@ const HEADINGS = [
   },
 ];
 interface ExchangeProps {
+  hasNextPage: boolean;
   isLoading: boolean;
-  data?: any[];
   sortFilter: ExchangeSortInput;
   direction: SortDirection;
+  data?: any[];
   handleSortAndDirection: (newSort: ExchangeSortInput) => void;
   handlePagination: () => void;
 }
@@ -64,12 +69,27 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
     sortFilter,
     direction,
     handlePagination,
+    isLoading,
+    hasNextPage,
   } = props;
   const router = useRouter();
+
+  const debouncedHandlePagination = debounce(
+    handlePagination,
+    DEBOUNCED_INTERVAL
+  );
+
+  const [infiniteRef] = useInfiniteScroll({
+    loading: isLoading,
+    hasNextPage,
+    onLoadMore: debouncedHandlePagination,
+    rootMargin: "0px 0px 0px 0px",
+  });
 
   function handleNavigation(target: string) {
     router.push(`/exchanges/${target}`);
   }
+
   return (
     <table className="w-full text-sm opacity-60 font-semibold">
       <thead>
@@ -121,13 +141,11 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
             </td>
           </tr>
         ))}
-        <tr>
-          <td>
-            <button type="button" onClick={handlePagination}>
-              Load More
-            </button>
-          </td>
-        </tr>
+        {hasNextPage && (
+          <tr ref={infiniteRef}>
+            <td></td>
+          </tr>
+        )}
       </tbody>
     </table>
   );

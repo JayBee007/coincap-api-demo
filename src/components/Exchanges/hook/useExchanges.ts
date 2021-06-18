@@ -1,6 +1,7 @@
 import {
   useExchangesQuery,
   ExchangesQueryVariables,
+  PageInfo,
 } from "../../../graphql/__generated__";
 
 import numeral from "numeral";
@@ -42,7 +43,7 @@ export function useExchanges(variables: ExchangesQueryVariables) {
     variables,
   });
 
-  const { edges = [], pageInfo = {} } = data?.exchanges || {};
+  const { edges = [], pageInfo = {} as PageInfo } = data?.exchanges || {};
 
   const nodes = edges?.map((edge) => {
     const node = edge?.node;
@@ -63,5 +64,6 @@ export function useExchanges(variables: ExchangesQueryVariables) {
     nodes,
     pageInfo,
     fetchMore,
+    hasNextPage: pageInfo.hasNextPage,
   };
 }
