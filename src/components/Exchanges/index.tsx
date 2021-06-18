@@ -14,6 +14,5 @@ export function ExchangesContainer(): React.ReactElement {
 
   if (isLoading) return <div>Loading....</div>;
 
-  console.log("nodes", nodes);
-  return <Exchanges />;
+  return <Exchanges data={nodes} />;
 }
