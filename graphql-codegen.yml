@@ -1,9 +1,9 @@
 overwrite: true
 schema: "https://graphql.coincap.io"
-documents: "graphql/**/*.ts"
+documents: "./src/graphql/**/*.ts"
 
 generates:
-  generated/index.tsx:
+  ./src/graphql/__generated__/index.tsx:
 
     config:
       reactApolloVersion: 3

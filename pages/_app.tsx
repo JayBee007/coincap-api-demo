@@ -1,7 +1,7 @@
 import type { AppProps } from "next/app";
 import { ApolloProvider } from "@apollo/client";
 
-import { client } from "../graphql/client";
+import { client } from "../src/graphql/client";
 
 import { MainLayout } from "../src/components/Layout";
 
