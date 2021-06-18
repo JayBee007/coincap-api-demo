@@ -28,7 +28,7 @@ function getVolumeUsd24hr(volume: null | string | number) {
 
 function getStatus(date: Date | string | number) {
   return nullCheck(date)
-    ? ""
+    ? false
     : differenceInHours(new Date(), new Date(date)) <= 24;
 }
 
