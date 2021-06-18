@@ -1,21 +1,29 @@
 import React from "react";
 import { useRouter } from "next/router";
 
+import { ArrowDown } from "../../assets/icons/ArrowDown";
+import { ArrowUp } from "../../assets/icons/ArrowUp";
+
+import { ExchangeSortInput, SortDirection } from "../../../generated";
+
 const HEADINGS = [
   {
     title: "Rank",
     sort: true,
+    sortName: ExchangeSortInput["Rank"],
     alignClass: "text-center",
   },
   {
     title: "Name",
     sort: true,
+    sortName: ExchangeSortInput["Name"],
     alignClass: "text-left",
   },
   {
     title: "Trading Pairs",
     sort: true,
-    alignClass: "text-center",
+    sortName: ExchangeSortInput["TradingPairs"],
+    alignClass: "text-right",
   },
   {
     title: "Top Pair",
@@ -25,24 +33,31 @@ const HEADINGS = [
   {
     title: "Volume(24hr)",
     sort: true,
+    sortName: ExchangeSortInput["VolumeUsd24Hr"],
     alignClass: "text-right",
   },
   {
     title: "Total(%)",
     sort: true,
+    sortName: ExchangeSortInput["PercentTotalVolume"],
     alignClass: "text-right",
   },
   {
     title: "Status",
     sort: true,
+    sortName: ExchangeSortInput["UpdatedAt"],
     alignClass: "text-center",
   },
 ];
 interface ExchangeProps {
+  isLoading: boolean;
+  handleSortAndDirection: (newSort: ExchangeSortInput) => void;
   data?: any[];
+  sortFilter: ExchangeSortInput;
+  direction: SortDirection;
 }
 export function Exchanges(props: ExchangeProps): React.ReactElement {
-  const { data } = props;
+  const { data, handleSortAndDirection, sortFilter, direction } = props;
   const router = useRouter();
 
   function handleNavigation(target: string) {
@@ -54,12 +69,25 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
         <tr className="bg-gray-200">
           {HEADINGS.map((heading) => (
             <td
+              onClick={
+                heading.sortName
+                  ? () => handleSortAndDirection(heading.sortName)
+                  : () => {}
+              }
               className={`text-left py-2 ${heading.alignClass} ${
                 heading.sort ? "cursor-pointer" : "cursor-default"
               }`}
               key={heading.title}
             >
-              {heading.title}
+              <span>{heading.title} </span>
+              <span className="inline-block">
+                {sortFilter === heading.sortName &&
+                  (direction === SortDirection["Asc"] ? (
+                    <ArrowUp />
+                  ) : (
+                    <ArrowDown />
+                  ))}
+              </span>
             </td>
           ))}
         </tr>
@@ -73,7 +101,7 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
           >
             <td className="py-4 text-center">{node.rank}</td>
             <td className="py-4 text-left">{node.name}</td>
-            <td className="py-4 text-center">{node.tradingPairs}</td>
+            <td className="py-4 text-right">{node.tradingPairs}</td>
             <td className="py-4 text-right">{node.topPair}</td>
             <td className="py-4 text-right">{node.volumeUsd24Hr}</td>
             <td className="py-4 text-right">{node.percentTotalVolume}</td>

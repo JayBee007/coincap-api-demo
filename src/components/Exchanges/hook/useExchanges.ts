@@ -34,6 +34,7 @@ function getStatus(date: Date | string | number) {
 
 export function useExchanges(variables: ExchangesQueryVariables) {
   const { data, loading: isLoading } = useExchangesQuery({
+    fetchPolicy: "cache-first",
     variables,
   });
 
