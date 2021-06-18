@@ -1,7 +1,8 @@
 import {
   useExchangesQuery,
   ExchangesQueryVariables,
-} from "../../../../generated";
+  PageInfo,
+} from "../../../graphql/__generated__";
 
 import numeral from "numeral";
 import differenceInHours from "date-fns/differenceInHours";
@@ -33,11 +34,16 @@ function getStatus(date: Date | string | number) {
 }
 
 export function useExchanges(variables: ExchangesQueryVariables) {
-  const { data, loading: isLoading } = useExchangesQuery({
+  const {
+    data,
+    loading: isLoading,
+    fetchMore,
+  } = useExchangesQuery({
+    fetchPolicy: "cache-first",
     variables,
   });
 
-  const { edges = [], pageInfo = {} } = data?.exchanges || {};
+  const { edges = [], pageInfo = {} as PageInfo } = data?.exchanges || {};
 
   const nodes = edges?.map((edge) => {
     const node = edge?.node;
@@ -57,5 +63,7 @@ export function useExchanges(variables: ExchangesQueryVariables) {
     isLoading,
     nodes,
     pageInfo,
+    fetchMore,
+    hasNextPage: pageInfo.hasNextPage,
   };
 }
