@@ -3,7 +3,11 @@ import React, { useState, useCallback } from "react";
 import { Exchanges } from "./Exchanges";
 import { useExchanges } from "./hook/useExchanges";
 
-import { ExchangeSortInput, SortDirection, Exchange } from "../../../generated";
+import {
+  ExchangeSortInput,
+  SortDirection,
+  Exchange,
+} from "../../graphql/__generated__";
 
 export function ExchangesContainer(): React.ReactElement {
   const [variables, setVariables] = useState({
@@ -12,7 +16,7 @@ export function ExchangesContainer(): React.ReactElement {
     direction: SortDirection["Asc"],
   });
 
-  const { nodes, isLoading } = useExchanges(variables);
+  const { nodes, isLoading, fetchMore } = useExchanges(variables);
 
   function handleSortAndDirection(newSort: ExchangeSortInput) {
     const { sort, direction } = variables;
@@ -25,8 +29,13 @@ export function ExchangesContainer(): React.ReactElement {
 
       const newVariables = {
         ...variables,
+        first: 20,
         direction: newDirection,
       };
+
+      fetchMore({
+        variables: newVariables,
+      });
 
       setVariables({ ...newVariables });
       return;
@@ -35,8 +44,28 @@ export function ExchangesContainer(): React.ReactElement {
     const newVariables = {
       ...variables,
       sort: newSort,
+      first: 20,
       direction: SortDirection["Desc"],
     };
+
+    fetchMore({
+      variables: newVariables,
+    });
+
+    setVariables({ ...newVariables });
+  }
+
+  function handlePagination() {
+    const newVariables = {
+      ...variables,
+      first: variables.first + 40,
+    };
+
+    fetchMore({
+      variables: {
+        first: variables.first + 40,
+      },
+    });
 
     setVariables({ ...newVariables });
   }
@@ -48,6 +77,7 @@ export function ExchangesContainer(): React.ReactElement {
       data={nodes}
       isLoading={isLoading}
       handleSortAndDirection={handleSortAndDirection}
+      handlePagination={handlePagination}
     />
   );
 }

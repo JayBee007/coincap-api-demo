@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { ArrowDown } from "../../assets/icons/ArrowDown";
 import { ArrowUp } from "../../assets/icons/ArrowUp";
 
-import { ExchangeSortInput, SortDirection } from "../../../generated";
+import { ExchangeSortInput, SortDirection } from "../../graphql/__generated__";
 
 const HEADINGS = [
   {
@@ -51,13 +51,20 @@ const HEADINGS = [
 ];
 interface ExchangeProps {
   isLoading: boolean;
-  handleSortAndDirection: (newSort: ExchangeSortInput) => void;
   data?: any[];
   sortFilter: ExchangeSortInput;
   direction: SortDirection;
+  handleSortAndDirection: (newSort: ExchangeSortInput) => void;
+  handlePagination: () => void;
 }
 export function Exchanges(props: ExchangeProps): React.ReactElement {
-  const { data, handleSortAndDirection, sortFilter, direction } = props;
+  const {
+    data,
+    handleSortAndDirection,
+    sortFilter,
+    direction,
+    handlePagination,
+  } = props;
   const router = useRouter();
 
   function handleNavigation(target: string) {
@@ -114,6 +121,13 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
             </td>
           </tr>
         ))}
+        <tr>
+          <td>
+            <button type="button" onClick={handlePagination}>
+              Load More
+            </button>
+          </td>
+        </tr>
       </tbody>
     </table>
   );
