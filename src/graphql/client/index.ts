@@ -9,6 +9,9 @@ export const client = new ApolloClient({
           exchanges: {
             keyArgs: false,
           },
+          exchangeMarkets: {
+            keyArgs: ["exchangeId"],
+          },
         },
       },
     },

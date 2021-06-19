@@ -951,6 +951,31 @@ export type ExchangesQuery = (
   )> }
 );
 
+export type ExchangeMargetsQueryVariables = Exact<{
+  first?: Maybe<Scalars['Int']>;
+  sort?: Maybe<ExchangeMarketSortInput>;
+  direction?: Maybe<SortDirection>;
+  id: Scalars['ID'];
+}>;
+
+
+export type ExchangeMargetsQuery = (
+  { __typename?: 'Query' }
+  & { exchangeMarkets?: Maybe<(
+    { __typename?: 'ExchangeMarketConnection' }
+    & { pageInfo: (
+      { __typename?: 'PageInfo' }
+      & Pick<PageInfo, 'hasNextPage'>
+    ), edges?: Maybe<Array<Maybe<(
+      { __typename?: 'ExchangeMarketEdge' }
+      & { node?: Maybe<(
+        { __typename?: 'ExchangeMarket' }
+        & Pick<ExchangeMarket, 'id' | 'baseSymbol' | 'exchangeId' | 'baseId' | 'quoteSymbol' | 'quoteId' | 'rate' | 'priceUsd' | 'tradesCount24Hr' | 'volumeUsd24Hr' | 'percentExchangeVolume' | 'updatedAt'>
+      )> }
+    )>>> }
+  )> }
+);
+
 
 export const ExchangesDocument = gql`
     query exchanges($first: Int, $sort: ExchangeSortInput, $direction: SortDirection) {
@@ -1004,3 +1029,64 @@ export function useExchangesLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<
 export type ExchangesQueryHookResult = ReturnType<typeof useExchangesQuery>;
 export type ExchangesLazyQueryHookResult = ReturnType<typeof useExchangesLazyQuery>;
 export type ExchangesQueryResult = Apollo.QueryResult<ExchangesQuery, ExchangesQueryVariables>;
+export const ExchangeMargetsDocument = gql`
+    query exchangeMargets($first: Int, $sort: ExchangeMarketSortInput, $direction: SortDirection, $id: ID!) {
+  exchangeMarkets(
+    first: $first
+    sort: $sort
+    direction: $direction
+    exchangeId: $id
+  ) {
+    pageInfo {
+      hasNextPage
+    }
+    edges {
+      node {
+        id
+        baseSymbol
+        exchangeId
+        baseId
+        quoteSymbol
+        quoteId
+        rate
+        priceUsd
+        tradesCount24Hr
+        volumeUsd24Hr
+        percentExchangeVolume
+        updatedAt
+      }
+    }
+  }
+}
+    `;
+
+/**
+ * __useExchangeMargetsQuery__
+ *
+ * To run a query within a React component, call `useExchangeMargetsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useExchangeMargetsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useExchangeMargetsQuery({
+ *   variables: {
+ *      first: // value for 'first'
+ *      sort: // value for 'sort'
+ *      direction: // value for 'direction'
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useExchangeMargetsQuery(baseOptions: Apollo.QueryHookOptions<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>(ExchangeMargetsDocument, options);
+      }
+export function useExchangeMargetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>(ExchangeMargetsDocument, options);
+        }
+export type ExchangeMargetsQueryHookResult = ReturnType<typeof useExchangeMargetsQuery>;
+export type ExchangeMargetsLazyQueryHookResult = ReturnType<typeof useExchangeMargetsLazyQuery>;
+export type ExchangeMargetsQueryResult = Apollo.QueryResult<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>;

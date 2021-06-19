@@ -16,10 +16,9 @@ export function NavigationLink(props: NavigationLinkProps): React.ReactElement {
 
   let previousClassName = className || "";
 
-  let newClassName =
-    router.pathname === href
-      ? `${previousClassName} ${activeLinkClassnames}`
-      : previousClassName;
+  let newClassName = router.pathname.includes(href as string)
+    ? `${previousClassName} ${activeLinkClassnames}`
+    : previousClassName;
 
   return (
     <Link href={href}>

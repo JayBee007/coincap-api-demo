@@ -1,23 +1,34 @@
 import React, { useState } from "react";
+import { useRouter } from "next/router";
 
-import { Exchanges } from "./Exchanges";
-import { useExchanges } from "./hooks/useExchanges";
+import { useMarkets } from "./hooks/useMarkets";
+import { Markets } from "./Markets";
 
-import { ExchangeSortInput, SortDirection } from "../../graphql/__generated__";
+import { Scalars } from "../../graphql/__generated__";
+
+import {
+  ExchangeMarketSortInput,
+  SortDirection,
+} from "../../graphql/__generated__";
 
 const FIRST_COUNT = 25;
 const NEXT_COUNT = 35;
 
-export function ExchangesContainer(): React.ReactElement {
+export function MarketsContainer(): React.ReactElement {
+  const router = useRouter();
+
+  const { exchangeId } = router.query;
+
   const [variables, setVariables] = useState({
     first: FIRST_COUNT,
-    sort: ExchangeSortInput["Rank"],
-    direction: SortDirection["Asc"],
+    sort: ExchangeMarketSortInput["VolumeUsd24Hr"],
+    direction: SortDirection["Desc"],
+    id: exchangeId as Scalars["ID"],
   });
 
-  const { nodes, isLoading, fetchMore, hasNextPage } = useExchanges(variables);
+  const { nodes, isLoading, fetchMore, hasNextPage } = useMarkets(variables);
 
-  function handleSortAndDirection(newSort: ExchangeSortInput) {
+  function handleSortAndDirection(newSort: ExchangeMarketSortInput) {
     const { sort, direction } = variables;
 
     if (sort === newSort) {
@@ -70,7 +81,7 @@ export function ExchangesContainer(): React.ReactElement {
   }
 
   return (
-    <Exchanges
+    <Markets
       hasNextPage={hasNextPage}
       sortFilter={variables.sort}
       direction={variables.direction}
