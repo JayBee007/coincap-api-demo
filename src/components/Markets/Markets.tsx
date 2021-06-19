@@ -1,79 +1,81 @@
 import React from "react";
-import { useRouter } from "next/router";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import debounce from "lodash/debounce";
 
 import { ArrowDown } from "../../assets/icons/ArrowDown";
 import { ArrowUp } from "../../assets/icons/ArrowUp";
 
-import { ExchangeSortInput, SortDirection } from "../../graphql/__generated__";
+import {
+  ExchangeMarketSortInput,
+  SortDirection,
+} from "../../graphql/__generated__";
 
 const DEBOUNCED_INTERVAL = 300;
 
 const HEADINGS = [
   {
-    title: "Rank",
+    title: "Pair",
     sort: true,
-    sortName: ExchangeSortInput["Rank"],
+    sortName: ExchangeMarketSortInput["BaseSymbol"],
     alignClass: "text-center",
   },
   {
-    title: "Name",
+    title: "Rate",
     sort: true,
-    sortName: ExchangeSortInput["Name"],
-    alignClass: "text-left",
-  },
-  {
-    title: "Trading Pairs",
-    sort: true,
-    sortName: ExchangeSortInput["TradingPairs"],
+    sortName: ExchangeMarketSortInput["Rate"],
     alignClass: "text-right",
   },
   {
-    title: "Top Pair",
-    sort: false,
+    title: "Price",
+    sort: true,
+    sortName: ExchangeMarketSortInput["PriceUsd"],
     alignClass: "text-right",
   },
   {
-    title: "Volume(24hr)",
+    title: "Volume (24Hr)",
     sort: true,
-    sortName: ExchangeSortInput["VolumeUsd24Hr"],
+    sortName: ExchangeMarketSortInput["VolumeUsd24Hr"],
     alignClass: "text-right",
   },
   {
-    title: "Total(%)",
+    title: "Volume (%)",
     sort: true,
-    sortName: ExchangeSortInput["PercentTotalVolume"],
+    sortName: ExchangeMarketSortInput["PercentExchangeVolume"],
+    alignClass: "text-right",
+  },
+  {
+    title: "Trades (24Hr)",
+    sort: true,
+    sortName: ExchangeMarketSortInput["TradesCount24Hr"],
     alignClass: "text-right",
   },
   {
     title: "Status",
-    sort: true,
-    sortName: ExchangeSortInput["UpdatedAt"],
+    sort: false,
     alignClass: "text-center",
   },
 ];
-interface ExchangeProps {
+
+interface MarketProps {
   hasNextPage: boolean;
   isLoading: boolean;
-  sortFilter: ExchangeSortInput;
+  sortFilter: ExchangeMarketSortInput;
   direction: SortDirection;
   data?: any[];
-  handleSortAndDirection: (newSort: ExchangeSortInput) => void;
+  handleSortAndDirection: (newSort: ExchangeMarketSortInput) => void;
   handlePagination: () => void;
 }
 
-export function Exchanges(props: ExchangeProps): React.ReactElement {
+export function Markets(props: MarketProps): React.ReactElement {
   const {
     data,
-    handleSortAndDirection,
     sortFilter,
-    direction,
     handlePagination,
+    handleSortAndDirection,
+    direction,
     isLoading,
     hasNextPage,
   } = props;
-  const router = useRouter();
 
   const debouncedHandlePagination = debounce(
     handlePagination,
@@ -86,10 +88,6 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
     onLoadMore: debouncedHandlePagination,
     rootMargin: "0px 0px 0px 0px",
   });
-
-  function handleNavigation(target: string) {
-    router.push(`/exchanges/${target}`);
-  }
 
   return (
     <table className="w-full text-sm opacity-60 font-semibold">
@@ -123,16 +121,15 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
       <tbody>
         {data?.map((node: any) => (
           <tr
-            onClick={() => handleNavigation(node.id)}
             key={node.id}
             className="table-row bg-white hover:bg-gray-400 transition-all ease-in duration-150 font-semibold text-xs cursor-pointer border-b-2"
           >
-            <td className="py-4 text-center">{node.rank}</td>
-            <td className="py-4 text-left">{node.name}</td>
-            <td className="py-4 text-right">{node.tradingPairs}</td>
-            <td className="py-4 text-right">{node.topPair}</td>
+            <td className="py-4 text-center">{node.pair}</td>
+            <td className="py-4 text-right">{node.rate}</td>
+            <td className="py-4 text-right">{node.priceUsd}</td>
             <td className="py-4 text-right">{node.volumeUsd24Hr}</td>
-            <td className="py-4 text-right">{node.percentTotalVolume}</td>
+            <td className="py-4 text-right">{node.percentExchangeVolume}</td>
+            <td className="py-4 text-right">{node.tradesCount24Hr}</td>
             <td className="py-4 text-center">
               <span
                 className={`h-4 w-4 rounded-full inline-block ${

@@ -1,8 +1,20 @@
-import { useRouter } from "next/router";
+import React from "react";
+
+import { MarketsContainer } from "../../src/components/Markets";
+import { ClientOnly } from "../../src/components/ClientOnly";
+
 export default function ExchangePage(): React.ReactElement {
-  const router = useRouter();
+  return (
+    <div>
+      <ClientOnly>
+        <MarketsContainer />
+      </ClientOnly>
+    </div>
+  );
+}
 
-  console.log("rotuer => ,", router);
-
-  return <p>Exchange Page</p>;
+export async function getServerSideProps() {
+  return {
+    props: {},
+  };
 }
