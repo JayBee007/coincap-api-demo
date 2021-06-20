@@ -141,7 +141,7 @@ export function Markets(props: MarketProps): React.ReactElement {
             <td className="py-4 text-right">{node.tradesCount24Hr}</td>
             <td className="py-4 text-right">
               <Link
-                href={`/chart?exchange=${exchangeId}&base=${node.baseId}&quote=${node.quoteId}`}
+                href={`/chart?exchange=${exchangeId}&baseId=${node.baseId}&quoteId=${node.quoteId}&interval=h1`}
               >
                 <a className="inline-block">
                   <ExternalLink />
