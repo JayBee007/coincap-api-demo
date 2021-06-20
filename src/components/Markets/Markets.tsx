@@ -1,9 +1,11 @@
 import React from "react";
 import useInfiniteScroll from "react-infinite-scroll-hook";
 import debounce from "lodash/debounce";
+import Link from "next/link";
 
 import { ArrowDown } from "../../assets/icons/ArrowDown";
 import { ArrowUp } from "../../assets/icons/ArrowUp";
+import { ExternalLink } from "../../assets/icons/ExternalLink";
 
 import {
   ExchangeMarketSortInput,
@@ -50,6 +52,11 @@ const HEADINGS = [
     alignClass: "text-right",
   },
   {
+    title: "Charts",
+    sort: false,
+    alignClass: "text-right",
+  },
+  {
     title: "Status",
     sort: false,
     alignClass: "text-center",
@@ -57,6 +64,7 @@ const HEADINGS = [
 ];
 
 interface MarketProps {
+  exchangeId: string;
   hasNextPage: boolean;
   isLoading: boolean;
   sortFilter: ExchangeMarketSortInput;
@@ -75,6 +83,7 @@ export function Markets(props: MarketProps): React.ReactElement {
     direction,
     isLoading,
     hasNextPage,
+    exchangeId,
   } = props;
 
   const debouncedHandlePagination = debounce(
@@ -122,7 +131,7 @@ export function Markets(props: MarketProps): React.ReactElement {
         {data?.map((node: any) => (
           <tr
             key={node.id}
-            className="table-row bg-white hover:bg-gray-400 transition-all ease-in duration-150 font-semibold text-xs cursor-pointer border-b-2"
+            className="table-row bg-white hover:bg-gray-400 transition-all ease-in duration-150 font-semibold text-xs border-b-2"
           >
             <td className="py-4 text-center">{node.pair}</td>
             <td className="py-4 text-right">{node.rate}</td>
@@ -130,6 +139,15 @@ export function Markets(props: MarketProps): React.ReactElement {
             <td className="py-4 text-right">{node.volumeUsd24Hr}</td>
             <td className="py-4 text-right">{node.percentExchangeVolume}</td>
             <td className="py-4 text-right">{node.tradesCount24Hr}</td>
+            <td className="py-4 text-right">
+              <Link
+                href={`/chart?exchange=${exchangeId}&base=${node.baseId}&quote=${node.quoteId}`}
+              >
+                <a className="inline-block">
+                  <ExternalLink />
+                </a>
+              </Link>
+            </td>
             <td className="py-4 text-center">
               <span
                 className={`h-4 w-4 rounded-full inline-block ${
