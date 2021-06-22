@@ -16,6 +16,7 @@ Simple demo showcasing use of graphql API for fetching, pagination, filtering an
 - Due to the limitation of graphql API, pagination fetches previous data too
 - Components reuse is minimum, will be nice to have an abstraction of Table component
 - At the moment, no error handling has been implemented
+- Known issue with apollo-client's fetchMore, due to which infinite scroll cannot show proper loading indicator
 
 ## TODO
 
