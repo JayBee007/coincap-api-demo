@@ -1,12 +1,17 @@
 import React, { useEffect, useRef } from "react";
-import { createChart, CrosshairMode, isBusinessDay } from "lightweight-charts";
+import { createChart } from "lightweight-charts";
 import isEmpty from "lodash/isEmpty";
+
+import { chartConfig, candleStickConfig } from "./chartConfig";
+
+import { Spinner } from "../Spinner";
 
 import { OHLCData, Interval } from "../../rest";
 
 interface ChartProps {
   data: OHLCData[];
   selectedInterval: Interval;
+  loading: boolean;
   handleIntervalChange: (value: Interval) => void;
 }
 
@@ -59,7 +64,7 @@ const INTERVALS = [
 
 export function Chart(props: ChartProps): React.ReactElement {
   const chartRef = useRef(null);
-  const { data, selectedInterval, handleIntervalChange } = props;
+  const { data, selectedInterval, handleIntervalChange, loading } = props;
 
   function handleIntervalSelect(e: React.SyntheticEvent<HTMLSelectElement>) {
     // @ts-ignore
@@ -71,51 +76,9 @@ export function Chart(props: ChartProps): React.ReactElement {
       if (chartRef.current && !isEmpty(data)) {
         // @ts-ignore
         chartRef.current!.innerHTML = "";
-        const chart = createChart(chartRef.current!, {
-          width: 960,
-          height: 500,
-          localization: {
-            timeFormatter: (businessDayOrTimestamp: string) => {
-              return new Date(businessDayOrTimestamp).toLocaleString();
-            },
-          },
-          timeScale: {
-            borderColor: "rgba(197, 203, 206, 0.8)",
-            tickMarkFormatter: (time: number) => {
-              const year = new Date(time).toLocaleTimeString();
-              return String(year);
-            },
-          },
-          layout: {
-            backgroundColor: "rgb(242,242,242)",
-            textColor: "#000000",
-            fontSize: 12,
-            fontFamily: "Lato",
-          },
-          grid: {
-            vertLines: {
-              visible: false,
-            },
-            horzLines: {
-              visible: false,
-            },
-          },
-          crosshair: {
-            mode: CrosshairMode.Normal,
-          },
-          rightPriceScale: {
-            borderColor: "rgba(197, 203, 206, 0.8)",
-          },
-        });
+        const chart = createChart(chartRef.current!, chartConfig);
 
-        const candleSeries = chart.addCandlestickSeries({
-          upColor: "rgb(107, 165, 131)",
-          downColor: "rgb(215, 84, 66)",
-          borderDownColor: "rgb(91, 26, 19)",
-          borderUpColor: "rgb(34, 84, 55)",
-          wickDownColor: "rgb(115, 115, 117)",
-          wickUpColor: "rgb(115, 115, 117)",
-        });
+        const candleSeries = chart.addCandlestickSeries(candleStickConfig);
 
         // @ts-ignore
         candleSeries.setData(data);
@@ -123,8 +86,9 @@ export function Chart(props: ChartProps): React.ReactElement {
     },
     [data]
   );
+
   return (
-    <div>
+    <div className="relative">
       <div className="flex py-4">
         <span className="pr-4">Change interval</span>
         <select onChange={handleIntervalSelect} defaultValue={selectedInterval}>
@@ -135,6 +99,14 @@ export function Chart(props: ChartProps): React.ReactElement {
           ))}
         </select>
       </div>
+      {loading && (
+        <div
+          style={{ width: "960px", height: "500px", top: "56px" }}
+          className="absolute z-20 flex justify-center items-center top-0 right-0 left-0 bottom-0 bg-gray-50 bg-opacity-80"
+        >
+          <Spinner />
+        </div>
+      )}
       <div ref={chartRef}></div>
     </div>
   );

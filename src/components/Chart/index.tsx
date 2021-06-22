@@ -3,13 +3,14 @@ import { useRouter } from "next/router";
 import dynamic from "next/dynamic";
 import isEmpty from "lodash/isEmpty";
 
-import { Interval, getCandleUrl } from "../../rest";
-
+import { LastTradedPrice } from "./LastTradedPrice";
 // @ts-ignore
 const Chart = dynamic(() => import("./Chart").then((mod) => mod.Chart), {
   ssr: false,
 });
 
+import { ClientOnly } from "../ClientOnly";
+import { Interval, getCandleUrl } from "../../rest";
 import { getCandles, CandleApiVariables, CandleApiResponse } from "../../rest";
 
 export function ChartContainer(): React.ReactElement {
@@ -18,15 +19,28 @@ export function ChartContainer(): React.ReactElement {
     timestamp: -1,
   });
 
+  const [chartDataLoading, setChartDataLoading] = useState(false);
+
   const [currentTab, setCurrentTab] = useState<number>(1);
   const router = useRouter();
 
   const { exchange, baseId, quoteId, interval } =
     router.query as unknown as CandleApiVariables;
 
+  const hasRequiredParams = exchange && baseId && quoteId && interval;
+
+  useEffect(function () {
+    if (!hasRequiredParams) {
+      router.push("/exchanges");
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(
     function () {
       async function getData() {
+        setChartDataLoading(true);
+
         const candleData = await getCandles({
           exchange,
           baseId,
@@ -41,9 +55,13 @@ export function ChartContainer(): React.ReactElement {
             time: candle.period,
           })),
         });
+
+        setChartDataLoading(false);
       }
 
-      getData();
+      if (hasRequiredParams) {
+        getData();
+      }
     },
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [interval]
@@ -92,7 +110,7 @@ export function ChartContainer(): React.ReactElement {
             onClick={() => handleTabClick(2)}
             className="focus:outline-none px-8 py-2"
           >
-            Tab 2
+            Last Traded Price
           </button>
         </li>
       </ul>
@@ -100,12 +118,17 @@ export function ChartContainer(): React.ReactElement {
         {currentTab === 1 && (
           <Chart
             /** @ts-ignore */
+            loading={chartDataLoading}
             data={candleData.data}
             selectedInterval={interval}
             handleIntervalChange={handleIntervalChange}
           />
         )}
-        {currentTab === 2 && <div className="p-4">Second tab</div>}
+        {currentTab === 2 && (
+          <div className="p-4">
+            <LastTradedPrice baseId={baseId} quoteId={quoteId} />
+          </div>
+        )}
       </div>
     </main>
   );

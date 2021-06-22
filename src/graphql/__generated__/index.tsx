@@ -976,6 +976,20 @@ export type ExchangeMargetsQuery = (
   )> }
 );
 
+export type TradesSubscriptionVariables = Exact<{
+  exchangeId: Scalars['ID'];
+  pairs?: Maybe<Array<Maybe<Scalars['String']>> | Maybe<Scalars['String']>>;
+}>;
+
+
+export type TradesSubscription = (
+  { __typename?: 'Subscription' }
+  & { trades?: Maybe<(
+    { __typename?: 'Trade' }
+    & Pick<Trade, 'baseId' | 'quoteId' | 'price' | 'direction' | 'priceUsd' | 'timestamp'>
+  )> }
+);
+
 
 export const ExchangesDocument = gql`
     query exchanges($first: Int, $sort: ExchangeSortInput, $direction: SortDirection) {
@@ -1090,3 +1104,39 @@ export function useExchangeMargetsLazyQuery(baseOptions?: Apollo.LazyQueryHookOp
 export type ExchangeMargetsQueryHookResult = ReturnType<typeof useExchangeMargetsQuery>;
 export type ExchangeMargetsLazyQueryHookResult = ReturnType<typeof useExchangeMargetsLazyQuery>;
 export type ExchangeMargetsQueryResult = Apollo.QueryResult<ExchangeMargetsQuery, ExchangeMargetsQueryVariables>;
+export const TradesDocument = gql`
+    subscription trades($exchangeId: ID!, $pairs: [String]) {
+  trades(exchangeId: $exchangeId, pairs: $pairs) {
+    baseId
+    quoteId
+    price
+    direction
+    priceUsd
+    timestamp
+  }
+}
+    `;
+
+/**
+ * __useTradesSubscription__
+ *
+ * To run a query within a React component, call `useTradesSubscription` and pass it any options that fit your needs.
+ * When your component renders, `useTradesSubscription` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the subscription, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useTradesSubscription({
+ *   variables: {
+ *      exchangeId: // value for 'exchangeId'
+ *      pairs: // value for 'pairs'
+ *   },
+ * });
+ */
+export function useTradesSubscription(baseOptions: Apollo.SubscriptionHookOptions<TradesSubscription, TradesSubscriptionVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useSubscription<TradesSubscription, TradesSubscriptionVariables>(TradesDocument, options);
+      }
+export type TradesSubscriptionHookResult = ReturnType<typeof useTradesSubscription>;
+export type TradesSubscriptionResult = Apollo.SubscriptionResult<TradesSubscription>;
