@@ -62,3 +62,16 @@ export const MARKETS_QUERY = gql`
     }
   }
 `;
+
+export const TRADE_QUERY = gql`
+  subscription trades($exchangeId: ID!, $pairs: [String]) {
+    trades(exchangeId: $exchangeId, pairs: $pairs) {
+      baseId
+      quoteId
+      price
+      direction
+      priceUsd
+      timestamp
+    }
+  }
+`;

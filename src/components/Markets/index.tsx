@@ -82,6 +82,7 @@ export function MarketsContainer(): React.ReactElement {
 
   return (
     <Markets
+      exchangeId={variables.id}
       hasNextPage={hasNextPage}
       sortFilter={variables.sort}
       direction={variables.direction}

@@ -84,7 +84,7 @@ export function Exchanges(props: ExchangeProps): React.ReactElement {
     loading: isLoading,
     hasNextPage,
     onLoadMore: debouncedHandlePagination,
-    rootMargin: "0px 0px 0px 0px",
+    rootMargin: "0px 0px 100px 0px",
   });
 
   function handleNavigation(target: string) {
